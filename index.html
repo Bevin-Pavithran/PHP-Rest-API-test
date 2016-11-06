@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PHP oop rest api test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <button id="btn-get">Get Data</button>
+    <button id="btn-put">Update Data</button>
+    <button id="btn-post">Post Data</button>
+    <button id="btn-delete">Delete Data</button>
+    <div class="items"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+      $("#btn-get").click(function (e) {
+        e.preventDefault();
+        console.log("js call ajax get request");
+
+        $.ajax({
+          url: "/restapi/api/controllers/animalcontroller.php?action=getall",
+          method: "GET",
+          dataType: "html",
+          success: function(response) {
+            if(response) {
+              try {
+                console.log(JSON.parse(response));
+                printResult(JSON.parse(response));
+              } catch(e) {
+                alert(response);
+                console.log(e);
+              }
+            }
+          }
+        });
+
+      });
+
+      $("#btn-put").click(function (e) {
+        e.preventDefault();
+        console.log("js call ajax put request");
+
+        ajaxCall(
+          "/restapi/api/controllers/animalcontroller.php",
+          "PUT",
+          { id: 1, name: 'Alex' }
+        );
+
+      });
+
+      $("#btn-delete").click(function (e) {
+        e.preventDefault();
+        console.log("js call ajax delete request");
+
+        ajaxCall(
+          "/restapi/api/controllers/animalcontroller.php",
+          "DELETE",
+          { id: 2 }
+        );
+
+      });
+
+      $("#btn-post").click(function (e) {
+        e.preventDefault();
+        console.log("js call ajax post request");
+
+        ajaxCall(
+          "/restapi/api/controllers/animalcontroller.php",
+          "POST",
+          { type: 'dog', name: 'Cody' }
+        );
+
+      });
+
+      function ajaxCall(url,method,data) {
+
+        $.ajax({
+          url: url,
+          method: method,
+          dataType: "html",
+          data: data,
+          success: function(response) {
+            if(response) {
+              alert(response);
+            }
+          }
+        });
+
+      }
+
+      function printResult(result) {
+        $(".items").empty();
+
+        for(var i=0; i< result.length; i++) {
+          $(".items").append("<p>" + result[i].type + " - " + result[i].name + "</p>");
+        }
+        
+      }
+    </script>
+  </body>
+</html>
