@@ -20,35 +20,42 @@
       return self::$instance;
     }
     
-    public function getData($query) {
-      $statement = self::$db->prepare($query);
-      $statement->execute();
+    public function getData($query,$fields) {
+      try {
 
-      $result_array = array();
-      while($result = $statement->fetchObject()) {
-        array_push($result_array, $result);
+        $statement = self::$db->prepare($query);
+        $statement->execute($fields);
+
+        $result_array = array();
+        while($result = $statement->fetchObject()) {
+          array_push($result_array, $result);
+        }
+
+        if(sizeof($result_array) == 0) {
+          throw new Exception("Data not found");
+        }
+
+        return $result_array;
+
+      } catch(PDOException $e) {
+        throw new Exception("Database query error");
+      } catch(Exception $e) {
+        throw new Exception($e->getMessage());
       }
-
-      if(sizeof($result_array) == 0) {
-        $result_array = array("Error: " => $statement->errorInfo());
-      }
-
-      return json_encode($result_array, JSON_UNESCAPED_UNICODE);
 
     }
 
-    public function postData($query) {
+    public function postData($query,$fields) {
 
-      $statement = self::$db->prepare($query);
-      $statement->execute();
+      try {
+        $statement = self::$db->prepare($query);
+        $statement->execute($fields);
 
-      if($statement->errorCode() === '00000') {
-        $result_array = array("Succesfull");
-      } else {
-        $result_array = array("Error: " => $statement->errorInfo());
+        return "successfull";
+
+      } catch(PDOException $e) {
+        throw new Exception("Database query error");
       }
-
-      return json_encode($result_array, JSON_UNESCAPED_UNICODE);
 
     }
 

@@ -3,9 +3,6 @@
   include_once '../models/animalmodel.php';
   include_once '/generalcontroller.php';
 
-  $header = "Content-Type: application/json";
-  header($header);
-
   $controller = new GeneralController(new AnimalModel());
 
   $method = $_SERVER['REQUEST_METHOD'];
@@ -24,7 +21,7 @@
       $controller->deleteRequest();
       break;
     default:
-      echo "Wrong HTTP method";
+      echo json_encode(array("error" => true, "message" => "Wrong HTTP method"), JSON_UNESCAPED_UNICODE);
       break;
   }
 

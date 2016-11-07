@@ -22,14 +22,15 @@
           method: "GET",
           dataType: "html",
           success: function(response) {
-            if(response) {
-              try {
-                console.log(JSON.parse(response));
-                printResult(JSON.parse(response));
-              } catch(e) {
-                alert(response);
-                console.log(e);
+            try {
+              var result = JSON.parse(response);
+              if(!result.error) {
+                printResult(result);
+              } else {
+                console.log(result.message);
               }
+            } catch(e) {
+              console.log(response);
             }
           }
         });
@@ -43,7 +44,7 @@
         ajaxCall(
           "/restapi/api/controllers/animalcontroller.php",
           "PUT",
-          { id: 1, name: 'Alex' }
+          { id: 7, name: 'Tina' }
         );
 
       });
@@ -55,7 +56,7 @@
         ajaxCall(
           "/restapi/api/controllers/animalcontroller.php",
           "DELETE",
-          { id: 2 }
+          { id: 8 }
         );
 
       });
@@ -80,9 +81,7 @@
           dataType: "html",
           data: data,
           success: function(response) {
-            if(response) {
-              alert(response);
-            }
+            console.log(response);
           }
         });
 

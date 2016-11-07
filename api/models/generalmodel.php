@@ -18,27 +18,49 @@
     
     function getAll() {
       $query = "SELECT {$this->fields_str} FROM {$this->table_name}";
-      return $this->db_access->getData($query);
+      $field = array();
+      return $this->db_access->getData($query,$field);
     }
 
     function getById($id) {
-      $query = "SELECT {$this->fields_str} FROM {$this->table_name} WHERE _id={$id}";
-      return $this->db_access->getData($query);
+      $query = "SELECT {$this->fields_str} FROM {$this->table_name} WHERE _id= :id";
+      $field = array("id"=>$id);
+      return $this->db_access->getData($query,$field);
     }
 
     function postItem($insert) {
-      $query = "INSERT INTO {$this->table_name} ({$this->fields_str}) VALUES ({$insert})";
-      return $this->db_access->postData($query);
+      $query = "INSERT INTO {$this->table_name} ({$this->fields_str}) VALUES ({$this->parameterizeDataForInsert($insert)})";
+      return $this->db_access->postData($query,$insert);
     }
 
     function updateById($id,$set) {
-      $query = "UPDATE {$this->table_name} SET {$set} WHERE _id={$id}";
-      return $this->db_access->postData($query);
+      $query = "UPDATE {$this->table_name} SET {$this->parameterizeData($set)} WHERE _id = :id";
+      $set["id"] = $id;
+      return $this->db_access->postData($query,$set);
     }
 
     function deleteById($id) {
-      $query = "DELETE FROM {$this->table_name} WHERE _id={$id}";
-      return $this->db_access->postData($query);
+      $query = "DELETE FROM {$this->table_name} WHERE _id = :id";
+      $field = array("id"=>$id);
+      return $this->db_access->postData($query,$field);
+    }
+
+    //Helpers
+    function parameterizeData($data) {
+      $str = "";
+      foreach($data as $key => $value) {
+        $str .= $key." = :".$key;
+      }
+      return $str;
+    }
+
+    function parameterizeDataForInsert($data) {
+      $str = "";
+      foreach($data as $key => $value) {
+        $str .= ":".$key.",";
+      }
+      $str = substr($str, 0, -1);
+      return $str;
     }
 
   }
